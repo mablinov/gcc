@@ -30,6 +30,8 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #include "unwind.h"
 #define NO_SIZE_OF_ENCODED_VALUE
 #include "unwind-pe.h"
+#include <sys/mman.h>
+#include <stdint.h>
 
 typedef struct
 {
