@@ -3494,7 +3494,7 @@ ix86_function_arg_boundary (machine_mode mode, const_tree type,
   else
     align = GET_MODE_ALIGNMENT (mode);
   if (align < PARM_BOUNDARY)
-    align = PARM_BOUNDARY;
+    align = TARGET_PACKED_ABI ? align : PARM_BOUNDARY;
   else
     {
       static bool warned;
@@ -3529,6 +3529,14 @@ ix86_function_arg_boundary (machine_mode mode, const_tree type,
     }
 
   return align;
+}
+
+/* Implement TARGET_FUNCTION_ARG_ROUND_BOUNDARY.  */
+
+static unsigned int
+ix86_function_arg_round_boundary (machine_mode mode, const_tree type, bool named)
+{
+  return ix86_function_arg_boundary (mode, type, named);
 }
 
 /* Return true if N is a possible register number of function value.  */
@@ -23055,6 +23063,13 @@ ix86_get_excess_precision (enum excess_precision_type type)
   return FLT_EVAL_METHOD_UNPREDICTABLE;
 }
 
+/* Implement TARGET_PROMOTE_PROTOTYPES.  */
+static bool
+ix86_promote_prototypes (const_tree t ATTRIBUTE_UNUSED)
+{
+  return !TARGET_PACKED_ABI;
+}
+
 /* Implement PUSH_ROUNDING.  On 386, we have pushw instruction that
    decrements by exactly 2 no matter what the position was, there is no pushb.
 
@@ -23065,7 +23080,10 @@ ix86_get_excess_precision (enum excess_precision_type type)
 poly_int64
 ix86_push_rounding (poly_int64 bytes)
 {
-  return ROUND_UP (bytes, UNITS_PER_WORD);
+  if (TARGET_PACKED_ABI)
+    return bytes;
+  else
+    return ROUND_UP (bytes, UNITS_PER_WORD);
 }
 
 /* Target-specific selftests.  */
@@ -23543,7 +23561,7 @@ ix86_run_selftests (void)
 #undef TARGET_C_EXCESS_PRECISION
 #define TARGET_C_EXCESS_PRECISION ix86_get_excess_precision
 #undef TARGET_PROMOTE_PROTOTYPES
-#define TARGET_PROMOTE_PROTOTYPES hook_bool_const_tree_true
+#define TARGET_PROMOTE_PROTOTYPES ix86_promote_prototypes
 #undef TARGET_SETUP_INCOMING_VARARGS
 #define TARGET_SETUP_INCOMING_VARARGS ix86_setup_incoming_varargs
 #undef TARGET_MUST_PASS_IN_STACK
@@ -23560,6 +23578,8 @@ ix86_run_selftests (void)
 #define TARGET_USE_PSEUDO_PIC_REG ix86_use_pseudo_pic_reg
 #undef TARGET_FUNCTION_ARG_BOUNDARY
 #define TARGET_FUNCTION_ARG_BOUNDARY ix86_function_arg_boundary
+#undef TARGET_FUNCTION_ARG_ROUND_BOUNDARY
+#define TARGET_FUNCTION_ARG_ROUND_BOUNDARY ix86_function_arg_round_boundary
 #undef TARGET_PASS_BY_REFERENCE
 #define TARGET_PASS_BY_REFERENCE ix86_pass_by_reference
 #undef TARGET_INTERNAL_ARG_POINTER
