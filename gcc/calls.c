@@ -1527,6 +1527,7 @@ initialize_argument_information (int num_actuals ATTRIBUTE_UNUSED,
 #endif
 			     reg_parm_stack_space,
 			     args[i].pass_on_stack ? 0 : args[i].partial,
+			     args_so_far,
 			     fndecl, args_size, &args[i].locate);
 #ifdef BLOCK_REG_PADDING
       else
@@ -4205,6 +4206,7 @@ emit_library_call_value_1 (int retval, rtx orgfun, rtx value,
 			   argvec[count].reg != 0,
 #endif
 			   reg_parm_stack_space, 0,
+			   args_so_far,
 			   NULL_TREE, &args_size, &argvec[count].locate);
 
       if (argvec[count].reg == 0 || argvec[count].partial != 0
@@ -4296,6 +4298,7 @@ emit_library_call_value_1 (int retval, rtx orgfun, rtx value,
 			       argvec[count].reg != 0,
 #endif
 			       reg_parm_stack_space, argvec[count].partial,
+			       args_so_far,
 			       NULL_TREE, &args_size, &argvec[count].locate);
 	  args_size.constant += argvec[count].locate.size.constant;
 	  gcc_assert (!argvec[count].locate.size.var);
