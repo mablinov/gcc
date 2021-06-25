@@ -987,6 +987,15 @@ typedef struct
 				   aapcs_reg == NULL_RTX.  */
   int aapcs_stack_size;		/* The total size (in words, per 8 byte) of the
 				   stack arg area so far.  */
+  int darwinpcs_stack_bytes;	/* If the argument is passed on the stack, this
+				   the byte-size.  */
+  int darwinpcs_sub_word_offset;/* This is the offset of this arg within a word
+				   when placing smaller items for darwinpcs.  */
+  int darwinpcs_sub_word_pos;	/* The next byte available within the word for
+				   darwinpcs.  */
+  int darwinpcs_n_named;        /* Number of named arguments.  */
+  int darwinpcs_n_args_processed; /* Number of arguments processed so far.  */
+  int darwinpcs_caller;         /* True if we are in a caller context.  */
   bool silent_p;		/* True if we should act silently, rather than
 				   raise an error for invalid calls.  */
 } CUMULATIVE_ARGS;
@@ -998,7 +1007,11 @@ typedef struct
 #define PAD_VARARGS_DOWN	0
 
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
-  aarch64_init_cumulative_args (&(CUM), FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS)
+  aarch64_init_cumulative_args (&(CUM), FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS, \
+				((int)N_NAMED_ARGS != -1))
+
+#define INIT_CUMULATIVE_INCOMING_ARGS(CUM, FNTYPE, LIBNAME) \
+  aarch64_init_cumulative_incoming_args (&(CUM), FNTYPE, LIBNAME)
 
 #define FUNCTION_ARG_REGNO_P(REGNO) \
   aarch64_function_arg_regno_p(REGNO)
