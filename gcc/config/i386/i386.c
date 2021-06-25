@@ -3494,7 +3494,7 @@ ix86_function_arg_boundary (machine_mode mode, const_tree type,
   else
     align = GET_MODE_ALIGNMENT (mode);
   if (align < PARM_BOUNDARY)
-    align = TARGET_PACKED_ABI ? align : PARM_BOUNDARY;
+    align = TARGET_PACKED_ABI ? (named ? align : PARM_BOUNDARY) : PARM_BOUNDARY;
   else
     {
       static bool warned;

@@ -4127,7 +4127,7 @@ locate_and_pad_parm (machine_mode passed_mode, tree type, int in_regs,
       locate->slot_offset = *initial_offset_ptr;
 
 #ifdef PUSH_ROUNDING
-      if (passed_mode != BLKmode)
+      if (PUSH_ARGS && passed_mode != BLKmode)
 	sizetree = size_int (PUSH_ROUNDING (TREE_INT_CST_LOW (sizetree)));
 #endif
 

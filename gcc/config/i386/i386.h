@@ -1682,7 +1682,7 @@ enum reg_class
 /* If defined, a C expression whose value is nonzero when we want to use PUSH
    instructions to pass outgoing arguments.  */
 
-#define PUSH_ARGS (TARGET_PUSH_ARGS && !ACCUMULATE_OUTGOING_ARGS && !TARGET_PACKED_ABI)
+#define PUSH_ARGS (TARGET_PUSH_ARGS && !ACCUMULATE_OUTGOING_ARGS)
 
 /* We want the stack and args grow in opposite directions, even if
    PUSH_ARGS is 0.  */
