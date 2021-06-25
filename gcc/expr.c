@@ -4332,7 +4332,7 @@ emit_single_push_insn_1 (machine_mode mode, rtx x, tree type)
      then store X into the stack location using an offset.  This is
      because emit_move_insn does not know how to pad; it does not have
      access to type.  */
-  else if (targetm.calls.function_arg_padding (mode, type) == PAD_DOWNWARD)
+  else if (targetm.calls.function_arg_padding (mode, type, true) == PAD_DOWNWARD)
     {
       emit_move_insn (stack_pointer_rtx,
 		      expand_binop (Pmode,
@@ -4473,9 +4473,9 @@ memory_load_overlap (rtx x, rtx y, HOST_WIDE_INT size)
 
 bool
 emit_push_insn (rtx x, machine_mode mode, tree type, rtx size,
-		unsigned int align, int partial, rtx reg, poly_int64 extra,
-		rtx args_addr, rtx args_so_far, int reg_parm_stack_space,
-		rtx alignment_pad, bool sibcall_p)
+		unsigned int align, int partial, bool named, rtx reg,
+		poly_int64 extra, rtx args_addr, rtx args_so_far,
+		int reg_parm_stack_space, rtx alignment_pad, bool sibcall_p)
 {
   rtx xinner;
   pad_direction stack_direction
@@ -4484,7 +4484,7 @@ emit_push_insn (rtx x, machine_mode mode, tree type, rtx size,
   /* Decide where to pad the argument: PAD_DOWNWARD for below,
      PAD_UPWARD for above, or PAD_NONE for don't pad it.
      Default is below for small data on big-endian machines; else above.  */
-  pad_direction where_pad = targetm.calls.function_arg_padding (mode, type);
+  pad_direction where_pad = targetm.calls.function_arg_padding (mode, type, named);
 
   /* Invert direction if stack is post-decrement.
      FIXME: why?  */
@@ -4727,7 +4727,7 @@ emit_push_insn (rtx x, machine_mode mode, tree type, rtx size,
       for (i = num_words - 1; i >= not_stack; i--)
 	if (i >= not_stack + offset)
 	  if (!emit_push_insn (operand_subword_force (x, i, mode),
-			  word_mode, NULL_TREE, NULL_RTX, align, 0, NULL_RTX,
+			  word_mode, NULL_TREE, NULL_RTX, align, 0, named, NULL_RTX,
 			  0, args_addr,
 			  GEN_INT (args_offset + ((i - not_stack + skip)
 						  * UNITS_PER_WORD)),

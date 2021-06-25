@@ -196,8 +196,8 @@ static int arm_arg_partial_bytes (cumulative_args_t,
 static rtx arm_function_arg (cumulative_args_t, const function_arg_info &);
 static void arm_function_arg_advance (cumulative_args_t,
 				      const function_arg_info &);
-static pad_direction arm_function_arg_padding (machine_mode, const_tree);
-static unsigned int arm_function_arg_boundary (machine_mode, const_tree);
+static pad_direction arm_function_arg_padding (machine_mode, const_tree, bool);
+static unsigned int arm_function_arg_boundary (machine_mode, const_tree, bool);
 static rtx aapcs_allocate_return_reg (machine_mode, const_tree,
 				      const_tree);
 static rtx aapcs_libcall_value (machine_mode);
@@ -7101,7 +7101,7 @@ arm_function_arg (cumulative_args_t pcum_v, const function_arg_info &arg)
 }
 
 static unsigned int
-arm_function_arg_boundary (machine_mode mode, const_tree type)
+arm_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   if (!ARM_DOUBLEWORD_ALIGN)
     return PARM_BOUNDARY;
@@ -16534,10 +16534,10 @@ arm_must_pass_in_stack (const function_arg_info &arg)
    in the lowest memory address.  */
 
 static pad_direction
-arm_function_arg_padding (machine_mode mode, const_tree type)
+arm_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   if (!TARGET_AAPCS_BASED)
-    return default_function_arg_padding (mode, type);
+    return default_function_arg_padding (mode, type, named);
 
   if (type && BYTES_BIG_ENDIAN && INTEGRAL_TYPE_P (type))
     return PAD_DOWNWARD;

@@ -6697,7 +6697,7 @@ abi_v4_pass_in_fpr (machine_mode mode, bool named)
    argument slot.  */
 
 pad_direction
-rs6000_function_arg_padding (machine_mode mode, const_tree type)
+rs6000_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
 #ifndef AGGREGATE_PADDING_FIXED
 #define AGGREGATE_PADDING_FIXED 0
@@ -6759,7 +6759,7 @@ rs6000_function_arg_padding (machine_mode mode, const_tree type)
    Quadword align large synthetic vector types.   */
 
 unsigned int
-rs6000_function_arg_boundary (machine_mode mode, const_tree type)
+rs6000_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   machine_mode elt_mode;
   int n_elts;

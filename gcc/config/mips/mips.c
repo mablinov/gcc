@@ -6181,7 +6181,7 @@ mips_get_reg_raw_mode (int regno)
    does.  */
 
 static pad_direction
-mips_function_arg_padding (machine_mode mode, const_tree type)
+mips_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   /* On little-endian targets, the first byte of every stack argument
      is passed in the first byte of the stack slot.  */
@@ -6221,7 +6221,7 @@ mips_function_arg_padding (machine_mode mode, const_tree type)
    the opposite if the most significant byte does.  */
 
 bool
-mips_pad_reg_upward (machine_mode mode, tree type)
+mips_pad_reg_upward (machine_mode mode, tree type, bool named)
 {
   /* No shifting is required for floating-point arguments.  */
   if (type != 0 ? FLOAT_TYPE_P (type) : GET_MODE_CLASS (mode) == MODE_FLOAT)
@@ -6229,7 +6229,7 @@ mips_pad_reg_upward (machine_mode mode, tree type)
 
   /* Otherwise, apply the same padding to register arguments as we do
      to stack arguments.  */
-  return mips_function_arg_padding (mode, type) == PAD_UPWARD;
+  return mips_function_arg_padding (mode, type, named) == PAD_UPWARD;
 }
 
 /* Return nonzero when an argument must be passed by reference.  */

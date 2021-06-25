@@ -12405,12 +12405,12 @@ s390_function_arg (cumulative_args_t cum_v, const function_arg_info &arg)
    left-justified when placed on the stack during parameter passing.  */
 
 static pad_direction
-s390_function_arg_padding (machine_mode mode, const_tree type)
+s390_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   if (s390_function_arg_vector (mode, type))
     return PAD_UPWARD;
 
-  return default_function_arg_padding (mode, type);
+  return default_function_arg_padding (mode, type, named);
 }
 
 /* Return true if return values of type TYPE should be returned

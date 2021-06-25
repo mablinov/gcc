@@ -1387,7 +1387,7 @@ iq2000_function_arg (cumulative_args_t cum_v, const function_arg_info &arg)
 /* Implement TARGET_FUNCTION_ARG_PADDING.  */
 
 static pad_direction
-iq2000_function_arg_padding (machine_mode mode, const_tree type)
+iq2000_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   return (! BYTES_BIG_ENDIAN
 	  ? PAD_UPWARD
@@ -1401,7 +1401,7 @@ iq2000_function_arg_padding (machine_mode mode, const_tree type)
 }
 
 static unsigned int
-iq2000_function_arg_boundary (machine_mode mode, const_tree type)
+iq2000_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   return (type != NULL_TREE
 	  ? (TYPE_ALIGN (type) <= PARM_BOUNDARY

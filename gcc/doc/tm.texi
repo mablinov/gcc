@@ -4185,7 +4185,7 @@ arguments in the preferred slot that is in the middle of the quad word
 instead of starting at the top.  The default implementation returns 0.
 @end deftypefn
 
-@deftypefn {Target Hook} pad_direction TARGET_FUNCTION_ARG_PADDING (machine_mode @var{mode}, const_tree @var{type})
+@deftypefn {Target Hook} pad_direction TARGET_FUNCTION_ARG_PADDING (machine_mode @var{mode}, const_tree @var{type}, bool @var{named})
 This hook determines whether, and in which direction, to pad out
 an argument of mode @var{mode} and type @var{type}.  It returns
 @code{PAD_UPWARD} to insert padding above the argument, @code{PAD_DOWNWARD}
@@ -4220,13 +4220,13 @@ a three byte aggregate may be passed in the high part of a register if so
 required.
 @end defmac
 
-@deftypefn {Target Hook} {unsigned int} TARGET_FUNCTION_ARG_BOUNDARY (machine_mode @var{mode}, const_tree @var{type})
+@deftypefn {Target Hook} {unsigned int} TARGET_FUNCTION_ARG_BOUNDARY (machine_mode @var{mode}, const_tree @var{type}, bool @var{named})
 This hook returns the alignment boundary, in bits, of an argument
 with the specified mode and type.  The default hook returns
 @code{PARM_BOUNDARY} for all arguments.
 @end deftypefn
 
-@deftypefn {Target Hook} {unsigned int} TARGET_FUNCTION_ARG_ROUND_BOUNDARY (machine_mode @var{mode}, const_tree @var{type})
+@deftypefn {Target Hook} {unsigned int} TARGET_FUNCTION_ARG_ROUND_BOUNDARY (machine_mode @var{mode}, const_tree @var{type}, bool @var{named})
 Normally, the size of an argument is rounded up to @code{PARM_BOUNDARY},
 which is the default value for this hook.  You can define this hook to
 return a different value if an argument size must be rounded to a larger

@@ -1113,7 +1113,8 @@ rx_function_arg_advance (cumulative_args_t cum,
 
 static unsigned int
 rx_function_arg_boundary (machine_mode mode ATTRIBUTE_UNUSED,
-			  const_tree type ATTRIBUTE_UNUSED)
+			  const_tree type ATTRIBUTE_UNUSED,
+			  bool named ATTRIBUTE_UNUSED)
 {
   /* Older versions of the RX backend aligned all on-stack arguments
      to 32-bits.  The RX C ABI however says that they should be

@@ -208,9 +208,11 @@ static rtx ia64_function_incoming_arg (cumulative_args_t,
 				       const function_arg_info &);
 static void ia64_function_arg_advance (cumulative_args_t,
 				       const function_arg_info &);
-static pad_direction ia64_function_arg_padding (machine_mode, const_tree);
+static pad_direction ia64_function_arg_padding (machine_mode, const_tree,
+						bool);
 static unsigned int ia64_function_arg_boundary (machine_mode,
-						const_tree);
+						const_tree,
+						bool);
 static bool ia64_function_ok_for_sibcall (tree, tree);
 static bool ia64_return_in_memory (const_tree, const_tree);
 static rtx ia64_function_value (const_tree, const_tree, bool);
@@ -5099,7 +5101,7 @@ ia64_function_arg_advance (cumulative_args_t cum_v,
    even though their normal alignment is 8 bytes.  See ia64_function_arg.  */
 
 static unsigned int
-ia64_function_arg_boundary (machine_mode mode, const_tree type)
+ia64_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   if (mode == TFmode && TARGET_HPUX && TARGET_ILP32)
     return PARM_BOUNDARY * 2;
@@ -10659,7 +10661,7 @@ ia64_builtin_decl (unsigned code, bool initialize_p ATTRIBUTE_UNUSED)
    most significant bits of the stack slot.  */
 
 static pad_direction
-ia64_function_arg_padding (machine_mode mode, const_tree type)
+ia64_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   /* Exception to normal case for structures/unions/etc.  */
   if (TARGET_HPUX
@@ -10669,7 +10671,7 @@ ia64_function_arg_padding (machine_mode mode, const_tree type)
     return PAD_UPWARD;
 
   /* Fall back to the default.  */
-  return default_function_arg_padding (mode, type);
+  return default_function_arg_padding (mode, type, named);
 }
 
 /* Emit text to declare externally defined variables and functions, because

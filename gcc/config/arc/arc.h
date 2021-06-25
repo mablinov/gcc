@@ -731,12 +731,12 @@ arc_return_addr_rtx(COUNT,FRAME)
  ? ROUND_ADVANCE (int_size_in_bytes (TYPE))	\
  : ROUND_ADVANCE (GET_MODE_SIZE (MODE)))
 
-#define ARC_FUNCTION_ARG_BOUNDARY(MODE,TYPE) PARM_BOUNDARY
+#define ARC_FUNCTION_ARG_BOUNDARY(MODE,TYPE,NAMED) PARM_BOUNDARY
 /* Round CUM up to the necessary point for argument MODE/TYPE.  */
 /* N.B. Vectors have alignment exceeding BIGGEST_ALIGNMENT.
    ARC_FUNCTION_ARG_BOUNDARY reduces this to no more than 32 bit.  */
 #define ROUND_ADVANCE_CUM(CUM, MODE, TYPE) \
-  ((((CUM) - 1) | (ARC_FUNCTION_ARG_BOUNDARY ((MODE), (TYPE)) - 1)/BITS_PER_WORD)\
+  ((((CUM) - 1) | (ARC_FUNCTION_ARG_BOUNDARY ((MODE), (TYPE)) - 1, 1)/BITS_PER_WORD) \
    + 1)
 
 /* Return boolean indicating arg of type TYPE and mode MODE will be passed in

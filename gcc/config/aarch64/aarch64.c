@@ -6719,7 +6719,7 @@ aarch64_function_arg_regno_p (unsigned regno)
    8 bytes.  */
 
 static unsigned int
-aarch64_function_arg_boundary (machine_mode mode, const_tree type)
+aarch64_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   unsigned int abi_break;
   unsigned int alignment = aarch64_function_arg_alignment (mode, type,
@@ -6758,7 +6758,7 @@ aarch64_get_reg_raw_mode (int regno)
    The related parameter passing rules are B.4, C.3, C.5 and C.14.  */
 
 static pad_direction
-aarch64_function_arg_padding (machine_mode mode, const_tree type)
+aarch64_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   /* On little-endian targets, the least significant byte of every stack
      argument is passed at the lowest byte address of the stack slot.  */

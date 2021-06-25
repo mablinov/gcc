@@ -661,9 +661,10 @@ static void sparc_function_arg_advance (cumulative_args_t,
 static rtx sparc_function_arg (cumulative_args_t, const function_arg_info &);
 static rtx sparc_function_incoming_arg (cumulative_args_t,
 					const function_arg_info &);
-static pad_direction sparc_function_arg_padding (machine_mode, const_tree);
+static pad_direction sparc_function_arg_padding (machine_mode, const_tree, bool);
 static unsigned int sparc_function_arg_boundary (machine_mode,
-						 const_tree);
+						 const_tree,
+						 named);
 static int sparc_arg_partial_bytes (cumulative_args_t,
 				    const function_arg_info &);
 static bool sparc_return_in_memory (const_tree, const_tree);
@@ -7496,7 +7497,7 @@ sparc_function_incoming_arg (cumulative_args_t cum,
 /* For sparc64, objects requiring 16 byte alignment are passed that way.  */
 
 static unsigned int
-sparc_function_arg_boundary (machine_mode mode, const_tree type)
+sparc_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   return ((TARGET_ARCH64
 	   && (GET_MODE_ALIGNMENT (mode) == 128
@@ -7620,13 +7621,13 @@ sparc_function_arg_advance (cumulative_args_t cum_v,
    are always stored left shifted in their argument slot.  */
 
 static pad_direction
-sparc_function_arg_padding (machine_mode mode, const_tree type)
+sparc_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   if (TARGET_ARCH64 && type && AGGREGATE_TYPE_P (type))
     return PAD_UPWARD;
 
   /* Fall back to the default.  */
-  return default_function_arg_padding (mode, type);
+  return default_function_arg_padding (mode, type, named);
 }
 
 /* Handle the TARGET_RETURN_IN_MEMORY target hook.

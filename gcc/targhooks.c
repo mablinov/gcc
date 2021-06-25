@@ -785,7 +785,8 @@ default_function_arg_offset (machine_mode, const_tree)
    upward, but pad short args downward on big-endian machines.  */
 
 pad_direction
-default_function_arg_padding (machine_mode mode, const_tree type)
+default_function_arg_padding (machine_mode mode, const_tree type,
+			      bool named ATTRIBUTE_UNUSED)
 {
   if (!BYTES_BIG_ENDIAN)
     return PAD_UPWARD;
@@ -822,7 +823,8 @@ default_function_incoming_arg (cumulative_args_t, const function_arg_info &)
 
 unsigned int
 default_function_arg_boundary (machine_mode mode ATTRIBUTE_UNUSED,
-			       const_tree type ATTRIBUTE_UNUSED)
+			       const_tree type ATTRIBUTE_UNUSED,
+			       bool named ATTRIBUTE_UNUSED)
 {
   return PARM_BOUNDARY;
 }
@@ -2244,7 +2246,7 @@ std_gimplify_va_arg_expr (tree valist, tree type, gimple_seq *pre_p,
    }
 
   align = PARM_BOUNDARY / BITS_PER_UNIT;
-  boundary = targetm.calls.function_arg_boundary (TYPE_MODE (type), type);
+  boundary = targetm.calls.function_arg_boundary (TYPE_MODE (type), type, false);
 
   /* When we align parameter on stack for caller, if the parameter
      alignment is beyond MAX_SUPPORTED_STACK_ALIGNMENT, it will be

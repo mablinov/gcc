@@ -2608,7 +2608,8 @@ assign_parm_find_entry_rtl (struct assign_parm_data_all *all,
 
   locate_and_pad_parm (data->arg.mode, data->arg.type, in_regs,
 		       all->reg_parm_stack_space,
-		       entry_parm ? data->partial : 0, current_function_decl,
+		       entry_parm ? data->partial : 0, data->arg.named,
+		       current_function_decl,
 		       &all->stack_args_size, &data->locate);
 
   /* Update parm_stack_boundary if this parameter is passed in the
@@ -3646,7 +3647,8 @@ assign_parms (tree fndecl)
         {
           unsigned int align
 	    = targetm.calls.function_arg_boundary (data.arg.mode,
-						   data.arg.type);
+						   data.arg.type,
+						   data.arg.named);
 	  align = MINIMUM_ALIGNMENT (data.arg.type, data.arg.mode, align);
 	  if (TYPE_ALIGN (data.nominal_type) > align)
 	    align = MINIMUM_ALIGNMENT (data.nominal_type,
@@ -4009,7 +4011,7 @@ gimplify_parameters (gimple_seq *cleanup)
 
 void
 locate_and_pad_parm (machine_mode passed_mode, tree type, int in_regs,
-		     int reg_parm_stack_space, int partial,
+		     int reg_parm_stack_space, int partial, bool named,
 		     tree fndecl ATTRIBUTE_UNUSED,
 		     struct args_size *initial_offset_ptr,
 		     struct locate_and_pad_arg_data *locate)
@@ -4046,10 +4048,10 @@ locate_and_pad_parm (machine_mode passed_mode, tree type, int in_regs,
   sizetree = (type
 	      ? arg_size_in_bytes (type)
 	      : size_int (GET_MODE_SIZE (passed_mode)));
-  where_pad = targetm.calls.function_arg_padding (passed_mode, type);
-  boundary = targetm.calls.function_arg_boundary (passed_mode, type);
+  where_pad = targetm.calls.function_arg_padding (passed_mode, type, named);
+  boundary = targetm.calls.function_arg_boundary (passed_mode, type, named);
   round_boundary = targetm.calls.function_arg_round_boundary (passed_mode,
-							      type);
+							      type, named);
   locate->where_pad = where_pad;
 
   /* Alignment can't exceed MAX_SUPPORTED_STACK_ALIGNMENT.  */

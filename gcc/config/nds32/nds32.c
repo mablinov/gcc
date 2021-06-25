@@ -2053,7 +2053,7 @@ nds32_function_arg_advance (cumulative_args_t ca,
 }
 
 static unsigned int
-nds32_function_arg_boundary (machine_mode mode, const_tree type)
+nds32_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   return (nds32_needs_double_word_align (mode, type)
 	  ? NDS32_DOUBLE_WORD_ALIGNMENT

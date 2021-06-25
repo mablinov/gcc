@@ -556,7 +556,7 @@ c6x_block_reg_pad_upward (machine_mode mode ATTRIBUTE_UNUSED,
 /* Implement TARGET_FUNCTION_ARG_BOUNDARY.  */
 
 static unsigned int
-c6x_function_arg_boundary (machine_mode mode, const_tree type)
+c6x_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   unsigned int boundary = type ? TYPE_ALIGN (type) : GET_MODE_BITSIZE (mode);
 
@@ -581,9 +581,9 @@ c6x_function_arg_boundary (machine_mode mode, const_tree type)
 
 /* Implement TARGET_FUNCTION_ARG_ROUND_BOUNDARY.  */
 static unsigned int
-c6x_function_arg_round_boundary (machine_mode mode, const_tree type)
+c6x_function_arg_round_boundary (machine_mode mode, const_tree type, bool named)
 {
-  return c6x_function_arg_boundary (mode, type);
+  return c6x_function_arg_boundary (mode, type, named);
 }
 
 /* TARGET_FUNCTION_VALUE implementation.  Returns an RTX representing the place

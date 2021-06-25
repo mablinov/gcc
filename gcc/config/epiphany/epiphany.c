@@ -696,12 +696,12 @@ gen_compare_reg (machine_mode cmode, enum rtx_code code,
 
 /* Round CUM up to the necessary point for argument MODE/TYPE.  */
 #define ROUND_ADVANCE_CUM(CUM, MODE, TYPE) \
-  (epiphany_function_arg_boundary ((MODE), (TYPE)) > BITS_PER_WORD \
+  (epiphany_function_arg_boundary ((MODE), (TYPE), true) > BITS_PER_WORD \
    ? (((CUM) + 1) & ~1)	\
    : (CUM))
 
 static unsigned int
-epiphany_function_arg_boundary (machine_mode mode, const_tree type)
+epiphany_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   if ((type ? TYPE_ALIGN (type) : GET_MODE_BITSIZE (mode)) <= PARM_BOUNDARY)
     return PARM_BOUNDARY;

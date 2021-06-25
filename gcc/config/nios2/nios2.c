@@ -3429,7 +3429,7 @@ nios2_function_arg_advance (cumulative_args_t cum_v,
 }
 
 static pad_direction
-nios2_function_arg_padding (machine_mode mode, const_tree type)
+nios2_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   /* On little-endian targets, the first byte of every stack argument
      is passed in the first byte of the stack slot.  */
@@ -3456,7 +3456,7 @@ pad_direction
 nios2_block_reg_padding (machine_mode mode, tree type,
                          int first ATTRIBUTE_UNUSED)
 {
-  return nios2_function_arg_padding (mode, type);
+  return nios2_function_arg_padding (mode, type, true);
 }
 
 /* Emit RTL insns to initialize the variable parts of a trampoline.

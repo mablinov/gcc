@@ -170,8 +170,8 @@ static int pa_arg_partial_bytes (cumulative_args_t, const function_arg_info &);
 static void pa_function_arg_advance (cumulative_args_t,
 				     const function_arg_info &);
 static rtx pa_function_arg (cumulative_args_t, const function_arg_info &);
-static pad_direction pa_function_arg_padding (machine_mode, const_tree);
-static unsigned int pa_function_arg_boundary (machine_mode, const_tree);
+static pad_direction pa_function_arg_padding (machine_mode, const_tree, bool);
+static unsigned int pa_function_arg_boundary (machine_mode, const_tree, bool);
 static struct machine_function * pa_init_machine_status (void);
 static reg_class_t pa_secondary_reload (bool, rtx, reg_class_t,
 					machine_mode,
@@ -6367,7 +6367,7 @@ pa_pass_by_reference (cumulative_args_t, const function_arg_info &arg)
 /* Implement TARGET_FUNCTION_ARG_PADDING.  */
 
 static pad_direction
-pa_function_arg_padding (machine_mode mode, const_tree type)
+pa_function_arg_padding (machine_mode mode, const_tree type, bool named)
 {
   if (mode == BLKmode
       || (TARGET_64BIT
@@ -9956,7 +9956,7 @@ pa_function_arg (cumulative_args_t cum_v, const function_arg_info &arg)
 /* Arguments larger than one word are double word aligned.  */
 
 static unsigned int
-pa_function_arg_boundary (machine_mode mode, const_tree type)
+pa_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   bool singleword = (type
 		     ? (integer_zerop (TYPE_SIZE (type))

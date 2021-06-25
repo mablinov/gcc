@@ -150,7 +150,8 @@ static rtx xtensa_function_value (const_tree, const_tree, bool);
 static rtx xtensa_libcall_value (machine_mode, const_rtx);
 static bool xtensa_function_value_regno_p (const unsigned int);
 static unsigned int xtensa_function_arg_boundary (machine_mode,
-						  const_tree);
+						  const_tree,
+						  named);
 static void xtensa_init_builtins (void);
 static tree xtensa_fold_builtin (tree, int, tree *, bool);
 static rtx xtensa_expand_builtin (tree, rtx, rtx, machine_mode, int);
@@ -2206,7 +2207,7 @@ xtensa_function_incoming_arg (cumulative_args_t cum,
 }
 
 static unsigned int
-xtensa_function_arg_boundary (machine_mode mode, const_tree type)
+xtensa_function_arg_boundary (machine_mode mode, const_tree type, bool named)
 {
   unsigned int alignment;
 

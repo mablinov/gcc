@@ -100,6 +100,8 @@ struct arg_data
      even though pass_on_stack is zero, just because FUNCTION_ARG says so.
      pass_on_stack identifies arguments that *cannot* go in registers.  */
   int pass_on_stack;
+  /* True if this is a named argument.  */
+  bool named;
   /* Some fields packaged up for locate_and_pad_parm.  */
   struct locate_and_pad_arg_data locate;
   /* Location on the stack at which parameter should be stored.  The store
@@ -2510,6 +2512,7 @@ initialize_argument_information (int num_actuals ATTRIBUTE_UNUSED,
 
       args[i].unsignedp = unsignedp;
       args[i].mode = arg.mode;
+      args[i].named = arg.named;
 
       targetm.calls.warn_parameter_passing_abi (args_so_far, type);
 
@@ -2560,6 +2563,7 @@ initialize_argument_information (int num_actuals ATTRIBUTE_UNUSED,
 #endif
 			     reg_parm_stack_space,
 			     args[i].pass_on_stack ? 0 : args[i].partial,
+			     args[i].named,
 			     fndecl, args_size, &args[i].locate);
 #ifdef BLOCK_REG_PADDING
       else
@@ -5277,7 +5281,7 @@ emit_library_call_value_1 (int retval, rtx orgfun, rtx value,
 #else
 			   argvec[count].reg != 0,
 #endif
-			   reg_parm_stack_space, 0,
+			   reg_parm_stack_space, 0, true,
 			   NULL_TREE, &args_size, &argvec[count].locate);
 
       if (argvec[count].reg == 0 || argvec[count].partial != 0
@@ -5369,6 +5373,7 @@ emit_library_call_value_1 (int retval, rtx orgfun, rtx value,
 			       argvec[count].reg != 0,
 #endif
 			       reg_parm_stack_space, argvec[count].partial,
+			       true,
 			       NULL_TREE, &args_size, &argvec[count].locate);
 	  args_size.constant += argvec[count].locate.size.constant;
 	  gcc_assert (!argvec[count].locate.size.var);
@@ -5587,7 +5592,7 @@ emit_library_call_value_1 (int retval, rtx orgfun, rtx value,
 	    }
 
 	  emit_push_insn (val, mode, NULL_TREE, NULL_RTX, parm_align,
-			  partial, reg, 0, argblock,
+			  partial, true, reg, 0, argblock,
 			  (gen_int_mode
 			   (argvec[argnum].locate.offset.constant, Pmode)),
 			  reg_parm_stack_space,
@@ -6079,7 +6084,7 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 
       /* Compute how much space the argument should get:
 	 round up to a multiple of the alignment for arguments.  */
-      if (targetm.calls.function_arg_padding (arg->mode, TREE_TYPE (pval))
+      if (targetm.calls.function_arg_padding (arg->mode, TREE_TYPE (pval), arg->named)
 	  != PAD_NONE)
 	/* At the moment we don't (need to) support ABIs for which the
 	   padding isn't known at compile time.  In principle it should
@@ -6088,7 +6093,7 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 
       /* Compute the alignment of the pushed argument.  */
       parm_align = arg->locate.boundary;
-      if (targetm.calls.function_arg_padding (arg->mode, TREE_TYPE (pval))
+      if (targetm.calls.function_arg_padding (arg->mode, TREE_TYPE (pval), arg->named)
 	  == PAD_DOWNWARD)
 	{
 	  poly_int64 pad = used - size;
@@ -6101,8 +6106,9 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 	 This can either be done with push or copy insns.  */
       if (maybe_ne (used, 0)
 	  && !emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval),
-			      NULL_RTX, parm_align, partial, reg, used - size,
-			      argblock, ARGS_SIZE_RTX (arg->locate.offset),
+			      NULL_RTX, parm_align, partial, arg->named, reg,
+			      used - size, argblock,
+			      ARGS_SIZE_RTX (arg->locate.offset),
 			      reg_parm_stack_space,
 			      ARGS_SIZE_RTX (arg->locate.alignment_pad), true))
 	sibcall_failure = 1;
@@ -6148,7 +6154,7 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 
       /* When an argument is padded down, the block is aligned to
 	 PARM_BOUNDARY, but the actual argument isn't.  */
-      if (targetm.calls.function_arg_padding (arg->mode, TREE_TYPE (pval))
+      if (targetm.calls.function_arg_padding (arg->mode, TREE_TYPE (pval), arg->named)
 	  == PAD_DOWNWARD)
 	{
 	  if (arg->locate.size.var)
@@ -6208,7 +6214,7 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 
       if (!CONST_INT_P (size_rtx) || INTVAL (size_rtx) != 0)
 	emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval), size_rtx,
-			parm_align, partial, reg, excess, argblock,
+			parm_align, partial, arg->named, reg, excess, argblock,
 			ARGS_SIZE_RTX (arg->locate.offset),
 			reg_parm_stack_space,
 			ARGS_SIZE_RTX (arg->locate.alignment_pad), false);
@@ -6294,7 +6300,7 @@ must_pass_in_stack_var_size_or_pad (const function_arg_info &arg)
      a register would put it into the wrong part of the register.  */
   if (arg.mode == BLKmode
       && int_size_in_bytes (arg.type) % (PARM_BOUNDARY / BITS_PER_UNIT)
-      && (targetm.calls.function_arg_padding (arg.mode, arg.type)
+      && (targetm.calls.function_arg_padding (arg.mode, arg.type, arg.named)
 	  == (BYTES_BIG_ENDIAN ? PAD_UPWARD : PAD_DOWNWARD)))
     return true;
 

@@ -150,12 +150,13 @@ extern const char *hook_invalid_arg_for_unprototyped_fn
 extern void default_function_arg_advance
   (cumulative_args_t, const function_arg_info &);
 extern HOST_WIDE_INT default_function_arg_offset (machine_mode, const_tree);
-extern pad_direction default_function_arg_padding (machine_mode, const_tree);
+extern pad_direction default_function_arg_padding (machine_mode, const_tree, bool);
 extern rtx default_function_arg (cumulative_args_t, const function_arg_info &);
 extern rtx default_function_incoming_arg (cumulative_args_t,
 					  const function_arg_info &);
 extern unsigned int default_function_arg_boundary (machine_mode,
-						   const_tree);
+						   const_tree,
+						   bool);
 extern unsigned int default_function_arg_round_boundary (machine_mode,
 							 const_tree);
 extern bool hook_bool_const_rtx_commutative_p (const_rtx, int);

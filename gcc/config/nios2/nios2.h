@@ -288,7 +288,7 @@ typedef struct nios2_args
   do { (CUM).regs_used = 0; } while (0)
 
 #define PAD_VARARGS_DOWN \
-  (targetm.calls.function_arg_padding (TYPE_MODE (type), type) == PAD_DOWNWARD)
+  (targetm.calls.function_arg_padding (TYPE_MODE (type), type, 0) == PAD_DOWNWARD)
 
 #define BLOCK_REG_PADDING(MODE, TYPE, FIRST) \
   (nios2_block_reg_padding ((MODE), (TYPE), (FIRST)))
