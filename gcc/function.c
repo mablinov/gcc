@@ -4072,21 +4072,11 @@ locate_and_pad_parm (machine_mode passed_mode, tree type, int in_regs,
 	      ? arg_size_in_bytes (type)
 	      : size_int (GET_MODE_SIZE (passed_mode)));
   where_pad = targetm.calls.function_arg_padding (passed_mode, type);
-  boundary = targetm.calls.function_arg_boundary (passed_mode, type);
-  if (named_p)
-    {
-      round_boundary = targetm.calls.function_arg_round_boundary (passed_mode,
-							          type);
-      if (last_named_p)
-        round_boundary = PARM_BOUNDARY;
-    }
-  else
-    {
-      /* Force everything to be at least aligned to the parm boundary.  */
-      boundary = MAX (boundary, PARM_BOUNDARY);
-      round_boundary = PARM_BOUNDARY;
-    }
-
+  boundary = targetm.calls.function_arg_boundary_ca (passed_mode, type,
+						     ca);
+  round_boundary = targetm.calls.function_arg_round_boundary_ca (passed_mode,
+								 type,
+								 ca);
   locate->where_pad = where_pad;
 
   /* Alignment can't exceed MAX_SUPPORTED_STACK_ALIGNMENT.  */
