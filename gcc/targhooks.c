@@ -830,8 +830,7 @@ default_function_arg_boundary (machine_mode mode ATTRIBUTE_UNUSED,
 unsigned int
 default_function_arg_boundary_ca (machine_mode mode ATTRIBUTE_UNUSED,
 				  const_tree type ATTRIBUTE_UNUSED,
-				  cumulative_args_t ca ATTRIBUTE_UNUSED,
-				  const function_arg_info &arg ATTRIBUTE_UNUSED)
+				  cumulative_args_t ca ATTRIBUTE_UNUSED)
 {
   return default_function_arg_boundary (mode, type);
 }
@@ -846,8 +845,7 @@ default_function_arg_round_boundary (machine_mode mode ATTRIBUTE_UNUSED,
 unsigned int
 default_function_arg_round_boundary_ca (machine_mode mode ATTRIBUTE_UNUSED,
 					const_tree type ATTRIBUTE_UNUSED,
-					cumulative_args_t ca ATTRIBUTE_UNUSED,
-					const function_arg_info &arg ATTRIBUTE_UNUSED)
+					cumulative_args_t ca ATTRIBUTE_UNUSED)
 {
   return default_function_arg_round_boundary (mode, type);
 }
