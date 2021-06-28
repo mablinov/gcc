@@ -4936,7 +4936,7 @@ DEFHOOK
  "This hook returns the alignment boundary, in bits, of an argument\n\
 with the specified mode and type.  The default hook returns\n\
 @code{PARM_BOUNDARY} for all arguments.",
- unsigned int, (machine_mode mode, const_tree type, cumulative_args_t ca, const function_arg_info &arg, int n_named, int n_total, int i),
+ unsigned int, (machine_mode mode, const_tree type, cumulative_args_t ca, const function_arg_info &arg),
  default_function_arg_boundary_ca)
 
 DEFHOOK
@@ -4954,7 +4954,7 @@ DEFHOOK
 which is the default value for this hook.  You can define this hook to\n\
 return a different value if an argument size must be rounded to a larger\n\
 value.",
- unsigned int, (machine_mode mode, const_tree type, cumulative_args_t ca, const function_arg_info &arg, int n_named, int n_total, int i),
+ unsigned int, (machine_mode mode, const_tree type, cumulative_args_t ca, const function_arg_info &arg),
  default_function_arg_round_boundary_ca)
 
 /* Return the diagnostic message string if function without a prototype
