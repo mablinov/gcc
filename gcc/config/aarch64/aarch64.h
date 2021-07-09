@@ -995,6 +995,7 @@ typedef struct
 				   darwinpcs.  */
   int darwinpcs_n_named;        /* Number of named arguments.  */
   int darwinpcs_n_args_processed; /* Number of arguments processed so far.  */
+  int darwinpcs_caller;         /* True if we are in a caller context.  */
   bool silent_p;		/* True if we should act silently, rather than
 				   raise an error for invalid calls.  */
 } CUMULATIVE_ARGS;
