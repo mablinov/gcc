@@ -997,6 +997,8 @@ typedef struct
 				   when placing smaller items for darwinpcs.  */
   int darwinpcs_sub_word_pos;	/* The next byte available within the word for
 				   darwinpcs.  */
+  int darwinpcs_n_named;        /* Number of named arguments.  */
+  int darwinpcs_n_args_processed; /* Number of arguments processed so far.  */
   bool silent_p;		/* True if we should act silently, rather than
 				   raise an error for invalid calls.  */
 } CUMULATIVE_ARGS;
