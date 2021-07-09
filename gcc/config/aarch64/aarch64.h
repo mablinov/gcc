@@ -987,6 +987,14 @@ typedef struct
 				   aapcs_reg == NULL_RTX.  */
   int aapcs_stack_size;		/* The total size (in words, per 8 byte) of the
 				   stack arg area so far.  */
+  int darwinpcs_stack_bytes;	/* If the argument is passed on the stack, this
+				   the byte-size.  */
+  int darwinpcs_sub_word_offset;/* This is the offset of this arg within a word
+				   when placing smaller items for darwinpcs.  */
+  int darwinpcs_sub_word_pos;	/* The next byte available within the word for
+				   darwinpcs.  */
+  int darwinpcs_n_named;        /* Number of named arguments.  */
+  int darwinpcs_n_args_processed; /* Number of arguments processed so far.  */
   bool silent_p;		/* True if we should act silently, rather than
 				   raise an error for invalid calls.  */
 } CUMULATIVE_ARGS;

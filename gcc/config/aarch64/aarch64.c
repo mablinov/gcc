@@ -6955,6 +6955,11 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
   pcum->aapcs_arg_processed = false;
   pcum->aapcs_stack_words = 0;
   pcum->aapcs_stack_size = 0;
+  pcum->darwinpcs_stack_bytes = 0;
+  pcum->darwinpcs_sub_word_offset = 0;
+  pcum->darwinpcs_sub_word_pos = 0;
+  pcum->darwinpcs_n_named = n_named;
+  pcum->darwinpcs_n_args_processed = 0;
   pcum->silent_p = silent_p;
 
   if (!silent_p
@@ -7003,6 +7008,7 @@ aarch64_function_arg_advance (cumulative_args_t pcum_v,
       pcum->aapcs_stack_size += pcum->aapcs_stack_words;
       pcum->aapcs_stack_words = 0;
       pcum->aapcs_reg = NULL_RTX;
+      pcum->darwinpcs_n_args_processed++;
     }
 }
 
