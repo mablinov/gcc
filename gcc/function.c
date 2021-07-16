@@ -4050,11 +4050,23 @@ locate_and_pad_parm (machine_mode passed_mode, tree type, int in_regs,
 	      ? arg_size_in_bytes (type)
 	      : size_int (GET_MODE_SIZE (passed_mode)));
   where_pad = targetm.calls.function_arg_padding (passed_mode, type);
-  boundary = targetm.calls.function_arg_boundary_ca (passed_mode, type,
-						     ca);
-  round_boundary = targetm.calls.function_arg_round_boundary_ca (passed_mode,
-								 type,
-								 ca);
+
+  if (flag_stack_use_cumulative_args)
+    {
+      boundary = targetm.calls.function_arg_boundary_ca (passed_mode,
+							 type,
+							 ca);
+      round_boundary = targetm.calls.function_arg_round_boundary_ca
+	(passed_mode, type, ca);
+    }
+  else
+    {
+      boundary = targetm.calls.function_arg_boundary (passed_mode,
+						      type);
+      round_boundary = targetm.calls.function_arg_round_boundary
+	(passed_mode, type);
+    }
+
   locate->where_pad = where_pad;
 
   /* Alignment can't exceed MAX_SUPPORTED_STACK_ALIGNMENT.  */
