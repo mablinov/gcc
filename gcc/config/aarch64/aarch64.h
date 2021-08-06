@@ -1007,7 +1007,13 @@ typedef struct
 #define PAD_VARARGS_DOWN	0
 
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
-  aarch64_init_cumulative_args (&(CUM), FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS)
+  aarch64_init_cumulative_args (&(CUM), FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS, \
+				((int)N_NAMED_ARGS != -1))
+
+/* #if TARGET_MACHO */
+#define INIT_CUMULATIVE_INCOMING_ARGS(CUM, FNTYPE, LIBNAME) \
+  aarch64_init_cumulative_incoming_args (&(CUM), FNTYPE, LIBNAME)
+/* #endif */
 
 #define FUNCTION_ARG_REGNO_P(REGNO) \
   aarch64_function_arg_regno_p(REGNO)
