@@ -7023,6 +7023,7 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
 			      rtx libname ATTRIBUTE_UNUSED,
 			      const_tree fndecl ATTRIBUTE_UNUSED,
 			      unsigned n_named ATTRIBUTE_UNUSED,
+			      int caller_p ATTRIBUTE_UNUSED,
 			      bool silent_p)
 {
   pcum->aapcs_ncrn = 0;
@@ -7042,7 +7043,8 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
   pcum->darwinpcs_stack_bytes = 0;
   pcum->darwinpcs_sub_word_offset = 0;
   pcum->darwinpcs_sub_word_pos = 0;
-  pcum->darwinpcs_caller = ((int)n_named != -1);
+  /* pcum->darwinpcs_caller = ((int)n_named != -1); */
+  pcum->darwinpcs_caller = caller_p;
   pcum->darwinpcs_n_named = n_named;
   pcum->darwinpcs_n_args_processed = 0;
   pcum->silent_p = silent_p;
@@ -7074,6 +7076,18 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
 		     " the SVE ISA extension", fntype);
     }
 }
+
+#if TARGET_MACHO
+void
+aarch64_init_cumulative_incoming_args (CUMULATIVE_ARGS *pcum,
+				       const_tree fntype,
+				       rtx libname ATTRIBUTE_UNUSED)
+{
+  int n_named_args = (list_length (TYPE_ARG_TYPES (fntype)));
+
+  INIT_CUMULATIVE_ARGS (*pcum, fntype, libname, current_function_decl, n_named_args);
+}
+#endif
 
 static void
 aarch64_function_arg_advance (cumulative_args_t pcum_v,
