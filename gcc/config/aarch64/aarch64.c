@@ -3284,7 +3284,7 @@ aarch64_takes_arguments_in_sve_regs_p (const_tree fntype)
 {
   CUMULATIVE_ARGS args_so_far_v;
   aarch64_init_cumulative_args (&args_so_far_v, NULL_TREE, NULL_RTX,
-				NULL_TREE, 0, true);
+				NULL_TREE, 0, /*caller_p=*/1, true);
   cumulative_args_t args_so_far = pack_cumulative_args (&args_so_far_v);
 
   for (tree chain = TYPE_ARG_TYPES (fntype);
@@ -6938,7 +6938,7 @@ aarch64_init_cumulative_incoming_args (CUMULATIVE_ARGS *pcum,
 {
   int n_named_args = (list_length (TYPE_ARG_TYPES (fntype)));
 
-  INIT_CUMULATIVE_ARGS (*pcum, fntype, libname, current_function_decl, n_named_args);
+  aarch64_init_cumulative_args (pcum, fntype, libname, current_function_decl, n_named_args, 0);
 }
 #endif
 
@@ -7025,10 +7025,7 @@ aarch64_function_arg_boundary_ca (machine_mode mode, const_tree type,
   CUMULATIVE_ARGS *pcum = get_cumulative_args (ca);
   bool named_p = pcum->darwinpcs_n_args_processed < pcum->darwinpcs_n_named;
 
-  if (!pcum->darwinpcs_caller)
-    return aarch64_function_arg_boundary (mode, type);
-
-  if (pcum->darwinpcs_caller && named_p)
+  if (named_p)
     return aarch64_function_arg_boundary (mode, type);
   else
     return MAX (aarch64_function_arg_boundary (mode, type), PARM_BOUNDARY);
@@ -7053,10 +7050,7 @@ aarch64_function_arg_round_boundary_ca (machine_mode mode, const_tree type,
   bool named_p = pcum->darwinpcs_n_args_processed < pcum->darwinpcs_n_named;
   bool last_named_p = pcum->darwinpcs_n_args_processed + 1 == pcum->darwinpcs_n_named;
 
-  if (!pcum->darwinpcs_caller)
-    return aarch64_function_arg_round_boundary (mode, type);
-
-  if (pcum->darwinpcs_caller && named_p)
+  if (named_p)
     {
       if (last_named_p)
 	return PARM_BOUNDARY;
