@@ -6930,17 +6930,19 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
     }
 }
 
-#if TARGET_MACHO
 void
 aarch64_init_cumulative_incoming_args (CUMULATIVE_ARGS *pcum,
 				       const_tree fntype,
 				       rtx libname ATTRIBUTE_UNUSED)
 {
+#if !TARGET_MACHO
+  INIT_CUMULATIVE_ARGS (*pcum, fntype, libname, current_function_decl, -1);
+#else
   int n_named_args = (list_length (TYPE_ARG_TYPES (fntype)));
 
   aarch64_init_cumulative_args (pcum, fntype, libname, current_function_decl, n_named_args, 0);
-}
 #endif
+}
 
 static void
 aarch64_function_arg_advance (cumulative_args_t pcum_v,
