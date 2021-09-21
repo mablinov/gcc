@@ -1015,6 +1015,12 @@ This option is required when building the libgccjit.so library.
 Contrast with @option{--enable-shared}, which affects @emph{target}
 libraries.
 
+@item --disable-host-pch-support
+Specify that the c-family compilers should be built without support for
+Pre-Compiled-Headers (PCH).  The compilers will generate stub pch files
+(to avoid breaking build scripts), but ignore these (or any existing PCH
+files) when searching for headers.
+
 @item @anchor{with-gnu-as}--with-gnu-as
 Specify that the compiler should assume that the
 assembler it finds is the GNU assembler.  However, this does not modify
