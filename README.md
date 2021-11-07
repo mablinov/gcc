@@ -52,6 +52,8 @@ git commit messages can work for that too.
 
 2020-08-30 Enough of this is implemented to allow GCC to bootstrap, many test fails and issues to be resolved.
 
+2021-11-07 The host-side support for aarch64-apple-darwin is now on GCC master (as of r12-4968) I was able to build a cross-compiler from aarch64-apple-darwin20 to powerpc64le-linux-gnu and check that at least a small program worked properly on the target.
+
 ## Introduction.
 
 This is taken from:
