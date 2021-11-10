@@ -1,7 +1,7 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h> 
+#include <stdio.h>
 #include <string.h>
 
 extern void __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst);
@@ -48,13 +48,6 @@ write_byte (uintptr_t addr, int val)
 
 /* Size of a single trampoline entry, in bytes.  */
 #define SIZE_OF_TRAMPOLINE 64
-
-/*
-        hint    34 // bti c
-        ldr     x17, .+20
-        ldr     x18, .+24
-        br      x17
-*/
 
 #ifndef ARRAY_SIZE(X)
 #define ARRAY_SIZE(X) (sizeof(X[0]) / sizeof(X))
