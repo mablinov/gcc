@@ -247,6 +247,7 @@ __gcc_personality_seh0 (PEXCEPTION_RECORD ms_exc, void *this_frame,
 }
 #endif /* SEH */
 
+#if 0
 
 extern void __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst);
 extern void __builtin_nested_func_ptr_deleted (void *sp, void *chain, void *func, void **dst);
@@ -412,3 +413,5 @@ __builtin_nested_func_ptr_deleted (void *sp, void *chain, void *func, void **dst
   printf ("     sp = %p, chain = %p, func = %p, tramp = %p\n", sp, chain, func, tramp);
   printf ("     ctrl = %p\n", tramps_ctrl);
 }
+
+#endif
