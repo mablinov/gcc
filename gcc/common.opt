@@ -2655,6 +2655,10 @@ fstack-usage
 Common RejectNegative Var(flag_stack_usage)
 Output stack usage information on a per-function basis.
 
+foff-stack-trampolines
+Common RejectNegative Var(flag_off_stack_trampolines)
+Generate trampolines in executable memory rather than executable stack.
+
 fstrength-reduce
 Common Ignore
 Does nothing.  Preserved for backward compatibility.
