@@ -2702,6 +2702,10 @@ fstack-use-cumulative-args
 Common RejectNegative Var(flag_stack_use_cumulative_args) Init(1)
 Use cumulative args-based stack layout hooks.
 
+foff-stack-trampolines
+Common RejectNegative Var(flag_off_stack_trampolines)
+Generate trampolines in executable memory rather than executable stack.
+
 fstrength-reduce
 Common Ignore
 Does nothing.  Preserved for backward compatibility.
