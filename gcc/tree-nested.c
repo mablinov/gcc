@@ -47,10 +47,6 @@
 #include "symbol-summary.h"
 #include "symtab-thunks.h"
 
-/* APB: This is just a temporary hack.  This global flag controls whether we are
-   creating trampolines in the off-stack memory regions or not.  */
-static bool off_stack_trampolines = true;
-
 /* Summary of nested functions.  */
 static function_summary <nested_function_info *>
    *nested_function_sum = NULL;
@@ -617,7 +613,7 @@ get_trampoline_type (struct nesting_info *info)
 
   /* When trampolines are created off-stack then the only thing we need in the
      local frame is a single pointer.  */
-  if (off_stack_trampolines)
+  if (flag_off_stack_trampolines)
     {
       trampoline_type = build_pointer_type (void_type_node);
       return trampoline_type;
@@ -2800,7 +2796,7 @@ convert_tramp_reference_op (tree *tp, int *walk_subtrees, void *data)
       /* APB: We don't need to do the adjustment calls when using off-stack
 	 trampolines, any such adjustment will be done when the off-stack
 	 trampoline is created.  */
-      if (off_stack_trampolines)
+      if (flag_off_stack_trampolines)
 	x = gsi_gimplify_val (info, x, &wi->gsi);
       else
 	{
@@ -3527,7 +3523,7 @@ finalize_nesting_tree_1 (struct nesting_info *root)
 	  if (!field)
 	    continue;
 
-	  if (off_stack_trampolines)
+	  if (flag_off_stack_trampolines)
 	    {
 	      /* Initialise the off-stack trampolines using builtin calls.  */
 	      x = builtin_decl_implicit (BUILT_IN_FRAME_ADDRESS);
@@ -3601,7 +3597,7 @@ finalize_nesting_tree_1 (struct nesting_info *root)
   /* If we created initialization statements, insert them.  */
   if (stmt_list)
     {
-      if (off_stack_trampolines)
+      if (flag_off_stack_trampolines)
 	{
 	  /* Handle the new, off stack trampolines.  */
 	  gbind *bind;
