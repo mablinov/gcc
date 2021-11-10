@@ -1,11 +1,12 @@
+#include <unistd.h>
 #include <sys/mman.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-extern void __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst);
-extern void __builtin_nested_func_ptr_deleted (void *sp, void *chain, void *func, void **dst);
+void __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst);
+void __builtin_nested_func_ptr_deleted (void *sp, void *chain, void *func, void **dst);
 
 struct tramps_ctrl_data
 {
@@ -39,25 +40,22 @@ tramps_init_ctrl_data (void)
   return p;
 }
 
-static void
-write_byte (uintptr_t addr, int val)
-{
-  unsigned char *ptr = (unsigned char *) addr;
-  *ptr = (val & 0xff);
-}
-
 /* Size of a single trampoline entry, in bytes.  */
 #define SIZE_OF_TRAMPOLINE 64
 
-#ifndef ARRAY_SIZE(X)
-#define ARRAY_SIZE(X) (sizeof(X[0]) / sizeof(X))
-#endif
-
-static const uint32_t aarch64_trampoline_template[] = {
+static const uint32_t aarch64_trampoline_insns[] = {
   0xd503245f, /* hint    34 */
   0x580000b1, /* ldr     x17, .+20 */
   0x580000d2, /* ldr     x18, .+24 */
-  0xd61f0220  /* br      x17 */
+  0xd61f0220, /* br      x17 */
+  0xd5033f9f, /* dsb     sy */
+  0xd5033fdf /* isb */
+};
+
+struct aarch64_trampoline {
+  uint32_t insns[6];
+  void *func_ptr;
+  void *chain_ptr;
 };
 
 void
@@ -86,57 +84,14 @@ __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst
   if (ptr + SIZE_OF_TRAMPOLINE >= end)
     abort ();
 
-  /* 1. Generate code for the trampoline, filling in those bits as required from
+  /* Generate code for the trampoline, filling in those bits as required from
      the data passed into this function.  */
 
-
-  memcpy (tramps_ctrl->current_ptr, aarch64_trampoline_template,
-	  ARRAY_SIZE (aarch64_trampoline_template));
-
-#if 0
-  ptr = (uintptr_t) tramps_ctrl->current_ptr;
-  write_byte (ptr++, 0x41);
-  write_byte (ptr++, 0xbb);
-  addr = (uintptr_t) func;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-
-  write_byte (ptr++, 0x49);
-  write_byte (ptr++, 0xba);
-  addr = (uintptr_t) chain;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-  write_byte (ptr++, (addr & 0xff));
-  addr >>= 8;
-
-  write_byte (ptr++, 0x49);
-  write_byte (ptr++, 0xff);
-  write_byte (ptr++, 0xe3);
-
-  write_byte (ptr++, 0x90);
-  write_byte (ptr++, 0x90);
-  write_byte (ptr++, 0x90);
-  write_byte (ptr++, 0x90);
-  write_byte (ptr++, 0x90);	/* 24-bytes.  */
-#endif
+  struct aarch64_trampoline *trampoline = (struct aarch64_trampoline *)ptr;
+  memcpy (trampoline->insns, aarch64_trampoline_insns,
+	  sizeof(aarch64_trampoline_insns));
+  trampoline->func_ptr = func;
+  trampoline->chain_ptr = chain;
 
   /* 2. Flush the i-cache for the code we just wrote.  We're going to also write
      some data onto this page, but we don't need to flush the icache for
@@ -145,15 +100,18 @@ __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst
 
   /* 3. Write out the information into a header block so we can understand what
      this trampoline represents.  */
+#if 0
   ptr += 24;	/* Leave a gap.  */
   *((void **) ptr) = (void *) chain;
   ptr += 8;
   *((void **) ptr) = (void *) func;
   ptr += 8;
+#endif
 
   /* 4. Return a pointer to the new trampoline.  */
   *dst = tramps_ctrl->current_ptr;
   tramps_ctrl->current_ptr = ptr;
+
 
   printf ("GCC: Generating a nested function pointer\n");
   printf ("     sp = %p, chain = %p, func = %p, dst = %p\n", sp, chain, func, dst);
