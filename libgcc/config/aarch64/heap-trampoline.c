@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
+/* For pthread_jit_write_protect_np */
+#include <pthread.h>
+
 void __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst);
 void __builtin_nested_func_ptr_deleted (void *sp, void *chain, void *func, void **dst);
 
@@ -31,7 +34,7 @@ tramps_init_ctrl_data (void)
   /* Allocate the first page.  */
   page_size = getpagesize ();
   p->start_of_first_page = mmap (0, page_size, PROT_WRITE | PROT_EXEC,
-				 MAP_ANON | MAP_PRIVATE, 0, 0);
+				 MAP_ANON | MAP_PRIVATE | MAP_JIT, 0, 0);
   if (p->start_of_first_page == MAP_FAILED)
     return NULL;
 
@@ -68,6 +71,11 @@ __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst
     tramps_ctrl = tramps_init_ctrl_data ();
   if (tramps_ctrl == NULL)
     abort ();	/* TODO: Something better?  */
+
+  int feature =  pthread_jit_write_protect_supported_np();
+  /* Disable write protection for the MAP_JIT regions in this thread (see
+     https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon) */
+  pthread_jit_write_protect_np (0);
 
   /* Figure out the start, and then the end, of the page currently being written
      too.  */
@@ -112,6 +120,8 @@ __builtin_nested_func_ptr_created (void *sp, void *chain, void *func, void **dst
   *dst = tramps_ctrl->current_ptr;
   tramps_ctrl->current_ptr = ptr;
 
+  /* Re-enable write protection.  */
+  pthread_jit_write_protect_np (1);
 
   printf ("GCC: Generating a nested function pointer\n");
   printf ("     sp = %p, chain = %p, func = %p, dst = %p\n", sp, chain, func, dst);
