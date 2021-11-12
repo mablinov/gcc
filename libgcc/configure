@@ -2279,6 +2279,9 @@ case "$target" in
   aarch64*-*-linux* )
     off_stack_trampolines=$enableval
     ;;
+  x86_64-*-linux* )
+    off_stack_trampolines=$enableval
+    ;;
   *)
     as_fn_error $? "Configure option --enable-off-stack-trampolines is not supported \
 for this platform" "$LINENO" 5
@@ -2286,7 +2289,15 @@ for this platform" "$LINENO" 5
     ;;
 esac
 else
-  off_stack_trampolines=no
+
+case "$target" in
+  aarch64*-*darwin* | arm64*-*darwin* )
+    off_stack_trampolines=yes
+    ;;
+  *)
+    off_stack_trampolines=no
+    ;;
+esac
 fi
 
 
