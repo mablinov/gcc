@@ -775,7 +775,7 @@ x86_64-*-linux*)
 
 	if test x$off_stack_trampolines = xyes; then
 	    extra_parts="${extra_parts} heap-trampoline.o"
-	    tmake_file="${tmake_file} ${cpu_type}/t-heap-trampoline"
+	    tmake_file="${tmake_file} i386/t-heap-trampoline"
 	fi
 	;;
 x86_64-*-kfreebsd*-gnu)

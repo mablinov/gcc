@@ -24,7 +24,7 @@ struct tramp_ctrl_data
   int free_trampolines;
 
   /* This will be pointing to an executable mmap'ed page.  */
-  struct aarch64_trampoline *trampolines;
+  union ix86_trampoline *trampolines;
 };
 
 static const uint8_t trampoline_insns[] = {
@@ -43,11 +43,11 @@ static const uint8_t trampoline_insns[] = {
 union ix86_trampoline {
   uint8_t insns[sizeof(trampoline_insns)];
 
-  struct fields {
+  struct __attribute__((packed)) fields {
     uint8_t insn_0[2];
-    void *chain_ptr;
-    uint8_t insn_1[2];
     void *func_ptr;
+    uint8_t insn_1[2];
+    void *chain_ptr;
     uint8_t insn_2[3];
   } fields;
 };
@@ -55,7 +55,7 @@ union ix86_trampoline {
 int
 get_trampolines_per_page (void)
 {
-  return getpagesize() / sizeof(struct ix86_trampoline);
+  return getpagesize() / sizeof(union ix86_trampoline);
 }
 
 static _Thread_local struct tramp_ctrl_data *tramp_ctrl_curr = NULL;
@@ -120,8 +120,8 @@ __builtin_nested_func_ptr_created (void *chain, void *func, void **dst)
   /* Generate code for the trampoline, filling in those bits as required from
      the data passed into this function.  */
 
-  memcpy (trampoline->insns, ix86_trampoline_insns,
-	  sizeof(ix86_trampoline_insns));
+  memcpy (trampoline->insns, trampoline_insns,
+	  sizeof(trampoline_insns));
   trampoline->fields.func_ptr = func;
   trampoline->fields.chain_ptr = chain;
 
