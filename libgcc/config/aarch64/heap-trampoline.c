@@ -41,6 +41,24 @@ get_trampolines_per_page (void)
 
 static _Thread_local struct tramp_ctrl_data *tramp_ctrl_curr = NULL;
 
+void *
+allocate_trampoline_page (void)
+{
+  void *page;
+
+#if defined(__gnu_linux__)
+  page = mmap (0, getpagesize (), PROT_WRITE | PROT_EXEC,
+	       MAP_ANON | MAP_PRIVATE, 0, 0);
+#elif defined(__APPLE__)
+  page = mmap (0, getpagesize (), PROT_WRITE | PROT_EXEC,
+	       MAP_ANON | MAP_PRIVATE | MAP_JIT, 0, 0);
+#else
+  page = MAP_FAILED;
+#endif
+
+  return page;
+}
+
 struct tramp_ctrl_data *
 allocate_tramp_ctrl (struct tramp_ctrl_data *parent)
 {
@@ -49,11 +67,9 @@ allocate_tramp_ctrl (struct tramp_ctrl_data *parent)
   if (p == NULL)
     return NULL;
 
-  memset (p, 0, sizeof (struct tramp_ctrl_data));
-
   /* Allocate the corresponding page.  */
-  p->trampolines = mmap (0, getpagesize (), PROT_WRITE | PROT_EXEC,
-			 MAP_ANON | MAP_PRIVATE | MAP_JIT, 0, 0);
+  p->trampolines = allocate_trampoline_page ();
+
   if (p->trampolines == MAP_FAILED)
     return NULL;
 
@@ -61,21 +77,6 @@ allocate_tramp_ctrl (struct tramp_ctrl_data *parent)
   p->free_trampolines = get_trampolines_per_page();
 
   return p;
-}
-
-void *
-allocate_trampoline_page (void)
-{
-  void *page;
-
-  /* Allocate the first page.  */
-  page = mmap (0, getpagesize (), PROT_WRITE | PROT_EXEC,
-	       MAP_ANON | MAP_PRIVATE | MAP_JIT, 0, 0);
-
-  if (page == MAP_FAILED)
-    abort ();
-
-  return page;
 }
 
 #if defined(__gnu_linux__)
