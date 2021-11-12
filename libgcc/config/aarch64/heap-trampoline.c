@@ -135,17 +135,21 @@ __builtin_nested_func_ptr_created (void *chain, void *func, void **dst)
   /* Generate code for the trampoline, filling in those bits as required from
      the data passed into this function.  */
 
+#if defined(__APPLE__)
   /* Disable write protection for the MAP_JIT regions in this thread (see
      https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon) */
   pthread_jit_write_protect_np (0);
+#endif
 
   memcpy (trampoline->insns, aarch64_trampoline_insns,
 	  sizeof(aarch64_trampoline_insns));
   trampoline->func_ptr = func;
   trampoline->chain_ptr = chain;
 
+#if defined(__APPLE__)
   /* Re-enable write protection.  */
   pthread_jit_write_protect_np (1);
+#endif
 
   tramp_ctrl_curr->free_trampolines -= 1;
 
