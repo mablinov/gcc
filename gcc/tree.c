@@ -9618,21 +9618,18 @@ build_common_builtin_nodes (void)
 			"__builtin_nonlocal_goto",
 			ECF_NORETURN | ECF_NOTHROW);
 
+  tree ptr_ptr_type_node = build_pointer_type (ptr_type_node);
+
   ftype = build_function_type_list (void_type_node,
-				    ptr_type_node, // void *sp
 				    ptr_type_node, // void *chain
 				    ptr_type_node, // void *func
-				    ptr_type_node, // void **dst
+				    ptr_ptr_type_node, // void **dst
 				    NULL_TREE);
   local_define_builtin ("__builtin_nested_func_ptr_created", ftype,
 			BUILT_IN_NESTED_PTR_CREATED,
 			"__builtin_nested_func_ptr_created", ECF_NOTHROW);
 
   ftype = build_function_type_list (void_type_node,
-				    ptr_type_node, // void *sp
-				    ptr_type_node, // void *chain
-				    ptr_type_node, // void *func
-				    ptr_type_node, // void **dst
 				    NULL_TREE);
   local_define_builtin ("__builtin_nested_func_ptr_deleted", ftype,
 			BUILT_IN_NESTED_PTR_DELETED,
