@@ -3525,19 +3525,12 @@ finalize_nesting_tree_1 (struct nesting_info *root)
 
 	  if (flag_off_stack_trampolines)
 	    {
-	      /* Initialise the off-stack trampolines using builtin calls.  */
-	      x = builtin_decl_implicit (BUILT_IN_FRAME_ADDRESS);
-	      gcall *gg = gimple_build_call (x, 1, build_int_cst (integer_type_node, 0));
-	      gimple_stmt_iterator gsi = gsi_last (stmt_list);
-	      tree tmp = init_tmp_var_with_call (root, &gsi, gg);
-
 	      /* We pass a whole bunch of arguments to the builtin function that
 		 creates the off-stack trampoline, these are
-		 1. Stack pointer,
-		 2. The nested function chain value (that must be passed to the
+		 1. The nested function chain value (that must be passed to the
 		 nested function so it can find the function arguments).
-		 3. A pointer to the nested function implementation,
-		 4. The address in the local stack frame where we should write
+		 2. A pointer to the nested function implementation,
+		 3. The address in the local stack frame where we should write
 		 the address of the trampoline.
 
 		 When this code was originally written I just kind of threw
@@ -3545,25 +3538,24 @@ finalize_nesting_tree_1 (struct nesting_info *root)
 		 actually needed later, I think, the stack pointer could
 		 certainly be dropped, arguments #2 and #4 are based off the
 		 stack pointer anyway, so #1 doesn't seem to add much value.  */
-	      tree arg1, arg2, arg3, arg4;
+	      tree arg1, arg2, arg3;
 
 	      gcc_assert (DECL_STATIC_CHAIN (i->context));
-	      arg1 = tmp;
-	      arg2 = build_addr (root->frame_decl);
-	      arg3 = build_addr (i->context);
+	      arg1 = build_addr (root->frame_decl);
+	      arg2 = build_addr (i->context);
 
 	      x = build3 (COMPONENT_REF, TREE_TYPE (field),
 			  root->frame_decl, field, NULL_TREE);
-	      arg4 = build_addr (x);
+	      arg3 = build_addr (x);
 
 	      x = builtin_decl_implicit (BUILT_IN_NESTED_PTR_CREATED);
-	      stmt = gimple_build_call (x, 4, arg1, arg2, arg3, arg4);
+	      stmt = gimple_build_call (x, 3, arg1, arg2, arg3);
 	      gimple_seq_add_stmt (&stmt_list, stmt);
 
 	      /* This call to delete the nested function trampoline is added to
 		 the cleanup list, and called when we exit the current scope.  */
 	      x = builtin_decl_implicit (BUILT_IN_NESTED_PTR_DELETED);
-	      stmt = gimple_build_call (x, 4, arg1, arg2, arg3, arg4);
+	      stmt = gimple_build_call (x, 0);
 	      gimple_seq_add_stmt (&cleanup_list, stmt);
 	    }
 	  else
