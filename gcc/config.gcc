@@ -662,7 +662,6 @@ nano-x2 eden-x4 nano-x4 x86-64 x86-64-v2 x86-64-v3 x86-64-v4 native"
 # MUST be separated by exactly one space.
 x86_cpus="generic intel"
 
-stack-use-cumulative-args
 # Figure out if we need to enable -foff-stack-trampolines by default.
 case ${target} in
 aarch64*-*darwin* | arm64*-*darwin*)
