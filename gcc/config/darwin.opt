@@ -173,6 +173,10 @@ flat_namespace
 Driver RejectNegative
 Ignore the normal two-level namespace; resolve symbols in command line order and do not record which library provided the resolved symbol.
 
+foff-stack-trampolines
+Common RejectNegative Var(flag_off_stack_trampolines) Init(OSX_OFF_STACK_TRAMPOLINES_INIT)
+Generate trampolines in executable memory rather than executable stack.
+
 force_cpusubtype_ALL
 Driver RejectNegative
 For the assembler (and linker) permit any architecture sub-variant to be used without error.
