@@ -710,7 +710,7 @@ case ${target} in
 
   case ${target} in
   aarch64*-*darwin* | arm64*-*darwin*)
-    if ${macos_maj}=11 || ${macos_maj}=12
+    if ${macos_maj}=11 || ${macos_maj}=12; do
       echo "Detected MacOS Major version ${macos_maj}, enabling use of off-stack trampolines" 1>&2
       tm_defines="$tm_defines OSX_OFF_STACK_TRAMPOLINES_INIT=1"
     fi
