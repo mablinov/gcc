@@ -3470,7 +3470,7 @@ aarch64_takes_arguments_in_sve_regs_p (const_tree fntype)
 {
   CUMULATIVE_ARGS args_so_far_v;
   aarch64_init_cumulative_args (&args_so_far_v, NULL_TREE, NULL_RTX,
-				NULL_TREE, 0, /*caller_p=*/1, true);
+				NULL_TREE, 0, true);
   cumulative_args_t args_so_far = pack_cumulative_args (&args_so_far_v);
 
   for (tree chain = TYPE_ARG_TYPES (fntype);
@@ -6939,7 +6939,6 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
 			      rtx libname ATTRIBUTE_UNUSED,
 			      const_tree fndecl ATTRIBUTE_UNUSED,
 			      unsigned n_named ATTRIBUTE_UNUSED,
-			      int caller_p ATTRIBUTE_UNUSED,
 			      bool silent_p)
 {
   pcum->aapcs_ncrn = 0;
@@ -6959,8 +6958,6 @@ aarch64_init_cumulative_args (CUMULATIVE_ARGS *pcum,
   pcum->darwinpcs_stack_bytes = 0;
   pcum->darwinpcs_sub_word_offset = 0;
   pcum->darwinpcs_sub_word_pos = 0;
-  /* pcum->darwinpcs_caller = ((int)n_named != -1); */
-  pcum->darwinpcs_caller = caller_p;
   pcum->darwinpcs_n_named = n_named;
   pcum->darwinpcs_n_args_processed = 0;
   pcum->silent_p = silent_p;
@@ -7002,7 +6999,7 @@ aarch64_init_cumulative_incoming_args (CUMULATIVE_ARGS *pcum,
 #else
   int n_named_args = (list_length (TYPE_ARG_TYPES (fntype)));
 
-  aarch64_init_cumulative_args (pcum, fntype, libname, current_function_decl, n_named_args, 0);
+  aarch64_init_cumulative_args (pcum, fntype, libname, current_function_decl, n_named_args);
 #endif
 }
 
