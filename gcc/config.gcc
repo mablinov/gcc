@@ -1072,6 +1072,13 @@ esac
 
 # Figure out if we need to enable -foff-stack-trampolines by default.
 case ${target} in
+aarch64*-*darwin* | arm64*-*darwin*)
+  if test ${macos_maj} = 11 || test ${macos_maj} = 12; then
+    tm_defines="$tm_defines OFF_STACK_TRAMPOLINES_INIT=1"
+  else
+    tm_defines="$tm_defines OFF_STACK_TRAMPOLINES_INIT=0"
+  fi
+  ;;
 *)
   tm_defines="$tm_defines OFF_STACK_TRAMPOLINES_INIT=0"
   ;;

@@ -414,6 +414,10 @@ aarch64*-*darwin* | arm64*-*darwin* )
 	tmake_file="${tmake_file} t-crtfm"
 	# No soft float for now because our long double is DF not TF.
 	md_unwind_header=aarch64/aarch64-unwind.h
+	if test x$off_stack_trampolines = xyes; then
+	    extra_parts="$extra_parts heap-trampoline.o"
+	    tmake_file="${tmake_file} ${cpu_type}/t-heap-trampoline"
+	fi
 	;;
 aarch64*-*-freebsd*)
 	extra_parts="$extra_parts crtfastmath.o"

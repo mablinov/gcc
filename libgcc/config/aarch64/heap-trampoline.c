@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
+/* For pthread_jit_write_protect_np */
+#include <pthread.h>
+
 void *allocate_trampoline_page (void);
 int get_trampolines_per_page (void);
 struct tramp_ctrl_data *allocate_tramp_ctrl (struct tramp_ctrl_data *parent);
@@ -43,8 +46,15 @@ allocate_trampoline_page (void)
 {
   void *page;
 
+#if defined(__gnu_linux__)
   page = mmap (0, getpagesize (), PROT_WRITE | PROT_EXEC,
 	       MAP_ANON | MAP_PRIVATE, 0, 0);
+#elif defined(__APPLE__)
+  page = mmap (0, getpagesize (), PROT_WRITE | PROT_EXEC,
+	       MAP_ANON | MAP_PRIVATE | MAP_JIT, 0, 0);
+#else
+  page = MAP_FAILED;
+#endif
 
   return page;
 }
@@ -67,6 +77,7 @@ allocate_tramp_ctrl (struct tramp_ctrl_data *parent)
   return p;
 }
 
+#if defined(__gnu_linux__)
 static const uint32_t aarch64_trampoline_insns[] = {
   0xd503245f, /* hint    34 */
   0x580000b1, /* ldr     x17, .+20 */
@@ -75,6 +86,20 @@ static const uint32_t aarch64_trampoline_insns[] = {
   0xd5033f9f, /* dsb     sy */
   0xd5033fdf /* isb */
 };
+
+#elif defined(__APPLE__)
+static const uint32_t aarch64_trampoline_insns[] = {
+  0xd503245f, /* hint    34 */
+  0x580000b1, /* ldr     x17, .+20 */
+  0x580000d0, /* ldr     x16, .+24 */
+  0xd61f0220, /* br      x17 */
+  0xd5033f9f, /* dsb     sy */
+  0xd5033fdf /* isb */
+};
+
+#else
+#error "Unsupported AArch64 platform for heap trampolines"
+#endif
 
 void
 __builtin_nested_func_ptr_created (void *chain, void *func, void **dst)
@@ -99,10 +124,21 @@ __builtin_nested_func_ptr_created (void *chain, void *func, void **dst)
     = &tramp_ctrl_curr->trampolines[get_trampolines_per_page ()
 				    - tramp_ctrl_curr->free_trampolines];
 
+#if defined(__APPLE__)
+  /* Disable write protection for the MAP_JIT regions in this thread (see
+     https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon) */
+  pthread_jit_write_protect_np (0);
+#endif
+
   memcpy (trampoline->insns, aarch64_trampoline_insns,
 	  sizeof(aarch64_trampoline_insns));
   trampoline->func_ptr = func;
   trampoline->chain_ptr = chain;
+
+#if defined(__APPLE__)
+  /* Re-enable write protection.  */
+  pthread_jit_write_protect_np (1);
+#endif
 
   tramp_ctrl_curr->free_trampolines -= 1;
 

@@ -78,6 +78,9 @@ case "$target" in
   aarch64*-*-linux* )
     off_stack_trampolines=$enableval
     ;;
+  aarch64*-*darwin* | arm64*-*darwin* )
+    off_stack_trampolines=$enableval
+    ;;
   *)
     AC_MSG_ERROR([Configure option --enable-off-stack-trampolines is not supported \
 for this platform])
@@ -85,6 +88,9 @@ for this platform])
     ;;
 esac],[
 case "$target" in
+  aarch64*-*darwin* | arm64*-*darwin* )
+    off_stack_trampolines=yes
+    ;;
   *)
     off_stack_trampolines=no
     ;;
